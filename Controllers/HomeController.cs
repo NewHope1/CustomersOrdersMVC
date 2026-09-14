@@ -78,13 +78,9 @@ namespace CustomersOrdersMVC.Controllers
                     var updatedRows = fc["UpdatedRowsData"];
                     var deletedRows = fc["DeletedRowsData"];
 
-                    //List<Order> addedOrders = JsonSerializer.Deserialize<List<Order>>(addedRows);
-                    //List<Order> updatedOrders = JsonSerializer.Deserialize<List<Order>>(updatedRows);
-                    //List<Order> deletedOrders = JsonSerializer.Deserialize<List<Order>>(deletedRows);
-
-                    List<Order> addedOrders = getOrders(addedRows);
-                    List<Order> updatedOrders = getOrders(updatedRows);
-                    List<Order> deletedOrders = getOrders(deletedRows);
+                    List<Order> addedOrders = JsonSerializer.Deserialize<List<Order>>(addedRows);
+                    List<Order> updatedOrders = JsonSerializer.Deserialize<List<Order>>(updatedRows);
+                    List<Order> deletedOrders = JsonSerializer.Deserialize<List<Order>>(deletedRows);
 
                     // process addedRows
                     if (addedOrders != null)
@@ -157,74 +153,6 @@ namespace CustomersOrdersMVC.Controllers
         {
             return View();
         }
-
-        /// <summary>
-        /// Return a list of Order objects from a string record
-        /// </summary>
-        /// <param name="record">input string with columns delimeted by comma. For example:
-        /// "[{\"OrderID\":10254,\"CustomerID\":null,\"EmployeeID\":null,\"OrderDate\":\"1996-07-11T04:00:00.000Z\",\"RequiredDate\":\"1996-08-08T04:00:00.000Z\",\"ShippedDate\":\"1996-07-23T04:00:00.000Z\",\"ShipVia\":2,\"Freight\":45,\"ShipName\":\"Chop-suey Chinese\",\"ShipAddress\":\"Hauptstr. 31\",\"ShipCity\":\"Bern\",\"ShipRegion\":null,\"ShipPostalCode\":\"3012\",\"ShipCountry\":\"Switzerland\",\"Customer\":null,\"Order_Details\":[]}]"
-        /// This parameter comes from the client side
-        /// </param>
-        /// <returns>List of Order objects</returns>
-        private List<Order> getOrders(string record)
-        {
-            if (record == "[]") // no new rows added to grid
-            {
-                return null;
-            }
-
-            List<Order> rVal = new List<Order>();
-
-            Dictionary<string, string> columns = new Dictionary<string, string>();
-
-            string tempRecord = record;
-            ArrayList recs = new ArrayList();
-            var matcher = new Regex(@"{(.*?)}"); // match all records in between { and }
-            var matches = matcher.Matches(record).Cast<Match>().Select(m => m.Value).Distinct(); // cast to IEnumerable so we can operate on
-            foreach (string match in matches)
-            {
-                tempRecord = match.Replace("{", String.Empty); // remove beginning {
-                tempRecord = tempRecord.Replace("}", String.Empty); // remove ending }
-                tempRecord = tempRecord.Replace("\"", String.Empty); // remove all double quotes
-                recs.Add(tempRecord);
-            };
-
-            // loop through all records (rows) and convert each one into an entity
-            foreach (String rec in recs)
-            {
-                var fields = rec.Split(',');
-
-                // loop through the individual record fields
-                foreach (var field in fields)
-                {
-                    var fieldName = field.Split(':')[0];
-
-                    // Deal with OrderDate and RequiredDate fields case. E.g., OrderDate:1996-07-11T04:00:00.000Z
-                    string fieldValue = ((fieldName == "OrderDate" || fieldName == "RequiredDate" || fieldName == "ShippedDate")
-                                        && field.Split(':')[1].Length != 0 && field.Split(':')[1] != "null"
-                                        ? (field.Split(':')[1] + ":" + field.Split(':')[2] + ":" + field.Split(':')[3]) : field.Split(':')[1]);
-
-                    columns.Add(fieldName, fieldValue);
-                }
-
-                Order newObj = new Order();
-                newObj.OrderID = columns["OrderID"] != "null" ? Convert.ToInt16(columns["OrderID"]) : 0;
-                newObj.CustomerID = columns["CustomerID"] != "null" ? columns["CustomerID"] : String.Empty;
-                newObj.Freight = Convert.ToDecimal(columns["Freight"]);
-                newObj.ShipCity = columns["ShipCity"];
-                newObj.ShipCountry = columns["ShipCountry"];
-
-                DateTime orderDate;
-                newObj.OrderDate = DateTime.TryParseExact(columns["OrderDate"], "yyyy-MM-ddTHH:mm:ss.fffZ", null, System.Globalization.DateTimeStyles.None, out orderDate) ? orderDate : DateTime.MinValue;
-
-                rVal.Add(newObj);
-
-                columns.Clear();
-            }
-
-            return rVal;
-        }
-
 
         // Read handlers. Fired when grid needs to fetch rows  
         //public ActionResult Read_Orders([DataSourceRequest] DataSourceRequest request, string customerId)
