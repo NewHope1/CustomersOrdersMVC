@@ -2,7 +2,6 @@ using System.Collections;
 using System.Diagnostics;
 using System.Text.Json;
 using System.Text.RegularExpressions;
-using Azure.Core;
 using CustomersOrdersMVC.Data;
 using CustomersOrdersMVC.Entities;
 using CustomersOrdersMVC.Models;
@@ -27,7 +26,6 @@ namespace CustomersOrdersMVC.Controllers
         public IActionResult Index()
         {
             ViewData["Title"] = "Customers Orders";
-
             return View();
         }
 
@@ -38,11 +36,10 @@ namespace CustomersOrdersMVC.Controllers
 
         // POST: Default/Edit/5
         [HttpPost]
-        //public ViewResult Edit(string lookupBtn, string submitBtn, IFormCollection fc, string customerId)
         public ViewResult Edit(string lookupBtn, string submitBtn, IFormCollection fc, CustomerViewModel viewModel)
         {
             ModelState.Clear(); // ModelState is prefered over ViewModel, so we must clear
-                                // ModelState or fetched customer values won't show on the UI
+                                // ModelState or customer values from database entity won't show on the UI
                                 
             if (ModelState.IsValid)
             {
@@ -71,7 +68,6 @@ namespace CustomersOrdersMVC.Controllers
                     customer.ContactTitle = viewModel.ContactTitle;
                     customer.Address = viewModel.Address;
 
-
                     // Now let's save customer orders...
 
                     var addedRows = fc["CreatedRowsData"];
@@ -87,8 +83,6 @@ namespace CustomersOrdersMVC.Controllers
                     {
                         addedOrders.ForEach(o =>
                         {
-                            //if (!customer.Orders.ToList().Exists(c => c.OrderID == o.OrderID))
-                            //{
                                 var newOrder = new Order()
                                 {
                                     Customer = customer,
@@ -100,7 +94,6 @@ namespace CustomersOrdersMVC.Controllers
                                 };
 
                                 customer.Orders.Add(newOrder);
-                            //}
                         });
                     }
 
@@ -139,16 +132,13 @@ namespace CustomersOrdersMVC.Controllers
                     }
 
                     _database.SaveChanges();
-
-
                 }
             }
 
             return View(viewModel);
         }
 
-        //ActionResult Edit(string lookupBtn, string submitBtn, FormCollection fc, CustomerViewModel viewModel, [Bind(Prefix = "models")] IEnumerable<OrderViewModel> orders)
-
+  
         public IActionResult Privacy()
         {
             return View();

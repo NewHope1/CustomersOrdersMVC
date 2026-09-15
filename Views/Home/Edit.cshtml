@@ -7,7 +7,7 @@
 @using (Html.BeginForm())
 {
     @* 
-       Kendo Grid doesn't' return its rows when submitted with the view submit button, so 
+       Kendo Grid doesn't' return its rows when submitted with the view, so 
        we use these hidden fields to send the rows to the controller
     *@
     @Html.Hidden("CreatedRowsData");
@@ -34,9 +34,9 @@
                 <h4 class="mb-2">Customer</h4>
 
                 <div class="row align-items-end mb-4">
-                    <div class="col-3">
+                    <div class="col-md-3">
                         @Html.LabelFor(m => m.CustomerID)
-                        @Html.TextBoxFor(m => m.CustomerID, new { @class = "form-control border-dark", @placeholder = "", style = "width:8em;" })
+                        @Html.TextBoxFor(m => m.CustomerID, new { @class = "form-control border-dark", @placeholder = "" })
                     </div>
 
                     <div class="col">
@@ -47,17 +47,17 @@
                 <div class="row col-12 mb-4 border border-dark p-2">
                     <div class="col-md-3">
                         @Html.LabelFor(m => m.ContactName, new { @class = "form-label" })
-                        @Html.TextBoxFor(m => m.ContactName, new { @class = "form-control border-dark", @placeholder = "", style = "width:8em;" })
+                        @Html.TextBoxFor(m => m.ContactName, new { @class = "form-control border-dark", @placeholder = "" })
                     </div>
 
                     <div class="col-md-3">
                         @Html.LabelFor(m => m.ContactTitle, new { @class = "form-label" })
-                        @Html.TextBoxFor(m => m.ContactTitle, new { @class = "form-control border-dark", @placeholder = "", style = "width:8em;" })
+                        @Html.TextBoxFor(m => m.ContactTitle, new { @class = "form-control border-dark", @placeholder = "" })
                     </div>
 
-                    <div class="col-4 mb-3 k-ml-0 ">
+                    <div class="col-md-3 mb-3">
                         @Html.LabelFor(m => m.Address, new { @class = "form-label" })
-                        @Html.TextBoxFor(m => m.Address, new { @class = "form-control border-dark", @placeholder = "", style = "width:17em;" })
+                        @Html.TextBoxFor(m => m.Address, new { @class = "form-control border-dark", @placeholder = "" })
                     </div>
                 </div>
 
@@ -65,8 +65,7 @@
 
                 <div class="row h-15 k-border-solid col-12 mb-3">
 
-                    @(
-                    Html.Kendo().Grid<CustomersOrdersMVC.Models.OrderViewModel>()
+                    @(Html.Kendo().Grid<CustomersOrdersMVC.Models.OrderViewModel>()
                             .Name("grid")
                             .Columns(col =>
                             {
@@ -78,27 +77,27 @@
                                 col.Command(command => command.Destroy());
                             }
                         )
+
                         .Editable(editable => editable.Mode(GridEditMode.InCell)) // Edit in cell
 
                         .ToolBar(tools =>
-                        {
-                            tools.Create(); // "Add new record" button
-                        }
+                          {
+                            tools.Create().Text("Add New Order"); // "Add new record" button
+                          }
                         )
 
                         .Pageable().Sortable().Filterable()
 
                         .DataSource(source => source.Ajax().Model(model =>
-                        {
+                          {
                             model.Id(o => o.OrderID);
                             model.Field(o => o.OrderID).Editable(false); // Order Id is read-only
-                        }
+                          }
                         )
 
-                        //.Read(read => read.Action("Read_Orders", "Home", new { Model, customerId = (Model != null) ? Model.CustomerID : "" }))
-                        .Read(read => read.Action("Read_Orders", "Home", Model))
+                        .Read(read => read.Action("Read_Orders", "Home", new { Model, customerId = (Model != null) ? Model.CustomerID : "" }))
 
-                        .Batch(true) // If you don't set it to true, the list of rows passed into the Update/Create/Update handlers would be null
+                        .Batch(true) // If you don't set it to true, the list of rows passed to the server would be null
 
                         )
                         )
