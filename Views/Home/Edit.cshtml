@@ -7,7 +7,7 @@
 @using (Html.BeginForm())
 {
     @* 
-       Kendo Grid doesn't' return its rows when submitted with the view, so 
+       Kendo Grid doesn't return its rows when submitted with the view, so 
        we use these hidden fields to send the rows to the controller
     *@
     @Html.Hidden("CreatedRowsData");
@@ -45,17 +45,17 @@
                 </div>
 
                 <div class="row col-12 mb-4 border border-dark p-2">
-                    <div class="col-md-3">
+                    <div class="col-md-4">
                         @Html.LabelFor(m => m.ContactName, new { @class = "form-label" })
                         @Html.TextBoxFor(m => m.ContactName, new { @class = "form-control border-dark", @placeholder = "" })
                     </div>
 
-                    <div class="col-md-3">
+                    <div class="col-md-4">
                         @Html.LabelFor(m => m.ContactTitle, new { @class = "form-label" })
                         @Html.TextBoxFor(m => m.ContactTitle, new { @class = "form-control border-dark", @placeholder = "" })
                     </div>
 
-                    <div class="col-md-3 mb-3">
+                    <div class="col-md-4 mb-3">
                         @Html.LabelFor(m => m.Address, new { @class = "form-label" })
                         @Html.TextBoxFor(m => m.Address, new { @class = "form-control border-dark", @placeholder = "" })
                     </div>
@@ -63,42 +63,46 @@
 
                 <h4>Orders</h4>
 
-                <div class="row h-15 k-border-solid col-12 mb-3">
+                <div class="row h-15 k-border-solid mb-3">
 
                     @(Html.Kendo().Grid<CustomersOrdersMVC.Models.OrderViewModel>()
-                            .Name("grid")
-                            .Columns(col =>
-                            {
-                                col.Bound(o => o.OrderID);
-                                col.Bound(o => o.OrderDate).EditorTemplateName("Date").Format("{0:d}").Width(100);
-                                col.Bound(o => o.Freight).Width(20);
-                                col.Bound(o => o.ShipCity).Width(100);
-                                col.Bound(o => o.ShipCountry).Width(100);
-                                col.Command(command => command.Destroy());
-                            }
-                        )
+                                .Name("grid")
+                                .Columns(col =>
+                                {
+                                    col.Bound(o => o.OrderID);
+                                    col.Bound(o => o.OrderDate).EditorTemplateName("Date").Format("{0:d}").Width(100);
+                                    col.Bound(o => o.Freight).Width(20);
+                                    col.Bound(o => o.ShipCity).Width(100);
+                                    col.Bound(o => o.ShipCountry).Width(100);
+                                    col.Command(command => command.Destroy());
+                                }
+                            )
 
-                        .Editable(editable => editable.Mode(GridEditMode.InCell)) // Edit in cell
+                            .Editable(editable => editable.Mode(GridEditMode.InCell)) // Edit in cell
 
-                        .ToolBar(tools =>
-                          {
-                            tools.Create().Text("Add New Order"); // "Add new record" button
-                          }
-                        )
+                            .ToolBar(tools =>
+                              {
+                                  tools.Create().Text("Add New Order"); // "Add new record" button
+                              }
+                            )
 
-                        .Pageable().Sortable().Filterable()
+                            .Pageable().Sortable().Filterable()
 
-                        .DataSource(source => source.Ajax().Model(model =>
-                          {
-                            model.Id(o => o.OrderID);
-                            model.Field(o => o.OrderID).Editable(false); // Order Id is read-only
-                          }
-                        )
+                            .DataSource(source => source.Ajax().Model(model =>
+                                   {
+                                       model.Id(o => o.OrderID);
+                                       model.Field(o => o.OrderID).Editable(false); // Order Id is read-only
+                                   }
+                            )
 
-                        .Read(read => read.Action("Read_Orders", "Home", new { Model, customerId = (Model != null) ? Model.CustomerID : "" }))
+                            .PageSize(10)
 
-                        .Batch(true) // If you don't set it to true, the list of rows passed to the server would be null
+                            .Sort(s => s.Add(c => c.OrderID).Ascending())
 
+                            .Read(read => read.Action("Read_Orders", "Home", new { Model, customerId = (Model != null) ? Model.CustomerID : "" }))
+
+                            .Batch(true) // If you don't set it to true, the list of rows passed to the server would be null
+                            
                         )
                         )
 

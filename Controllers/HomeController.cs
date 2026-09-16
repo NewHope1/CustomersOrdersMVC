@@ -34,7 +34,6 @@ namespace CustomersOrdersMVC.Controllers
             return View();
         }
 
-        // POST: Default/Edit/5
         [HttpPost]
         public ViewResult Edit(string lookupBtn, string submitBtn, IFormCollection fc, CustomerViewModel viewModel)
         {
@@ -121,10 +120,6 @@ namespace CustomersOrdersMVC.Controllers
                         {
                             if (customer.Orders.ToList().Exists(c => c.OrderID == d.OrderID))
                             {
-                                // must delete order details first so we don't get a constraint violation when deleting the order
-                                //var orderDetailsToDelete = _database.Order_Details.Where(t => d.OrderID == d.OrderID);
-                                //_database.Order_Details.RemoveRange(orderDetailsToDelete);
-
                                 var existingOrder = customer.Orders.AsQueryable().FirstOrDefault(f => f.OrderID == d.OrderID);
                                 _database.Entry(existingOrder).State = EntityState.Deleted;
                             }
