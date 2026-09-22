@@ -1,4 +1,4 @@
-This is a .Net (9.0) MVC with controller application. In order to build and run the app, you need to install the following NuGets 
+This is a simple typical customers orders .Net (9.0) MVC application. In order to build and run the app, you need to install the following NuGets 
 (since I'm running .Net 9.0, I installed the 9.x.xx of these packages, not the 10.x.xx):
 
 1. <b>Microsoft.EntityFrameworkCore</b> (which will automatically install other Microsoft EF packages).
